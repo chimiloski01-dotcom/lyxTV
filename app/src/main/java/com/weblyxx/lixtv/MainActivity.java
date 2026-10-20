@@ -26,17 +26,17 @@ public class MainActivity extends Activity {
  boolean fav(String url){return getPreferences(0).getBoolean("fav_"+url,false);}
  void play(String url){Intent i=new Intent(this,PlayerActivity.class);i.putExtra("url",url);startActivity(i);}
  void section(String heading,String caption){TextView t=text(heading,26);t.setTypeface(null,1);add(body,t,45);TextView c=text(caption,15);c.setTextColor(SOFT);add(body,c,42);}
- void item(String label,String subtitle,String url,boolean isChannel){LinearLayout r=new LinearLayout(this);r.setGravity(Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,dp(78));rp.bottomMargin=dp(9);body.addView(r,rp);
- TextView b=btn("▶  "+label+"\n"+subtitle);b.setTextSize(16);r.addView(b,new LinearLayout.LayoutParams(0,-1,1));b.setOnClickListener(v->play(url));
+ void item(String label,String subtitle,String url,boolean isChannel,String logoUrl){LinearLayout r=new LinearLayout(this);r.setGravity(Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,dp(78));rp.bottomMargin=dp(9);body.addView(r,rp);
+ if(isChannel){ImageView iv=new ImageView(this);iv.setScaleType(ImageView.ScaleType.FIT_CENTER);iv.setBackground(shape(PANEL));LinearLayout.LayoutParams ip=new LinearLayout.LayoutParams(dp(84),dp(70));ip.rightMargin=dp(8);r.addView(iv,ip);LogoLoader.load(iv,logoUrl);}\n TextView b=btn("▶  "+label+"\n"+subtitle);b.setTextSize(16);r.addView(b,new LinearLayout.LayoutParams(0,-1,1));b.setOnClickListener(v->play(url));
  if(isChannel){TextView f=btn(fav(url)?"★":"☆");LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(dp(66),-1);fp.leftMargin=dp(8);r.addView(f,fp);f.setOnClickListener(v->{boolean n=!fav(url);getPreferences(0).edit().putBoolean("fav_"+url,n).apply();f.setText(n?"★":"☆");});}}
  void films(){section("Cinema aberto","Curtas e filmes de acesso público disponíveis para reprodução.");
- item("Big Buck Bunny","Curta de animação aberto • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false);
- item("Elephants Dream","Animação independente • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false);
- item("For Bigger Joyrides","Vídeo público de teste • Curta","https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",false);
+ item("Big Buck Bunny","Curta de animação aberto • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false,null);
+ item("Elephants Dream","Animação independente • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false,null);
+ item("For Bigger Joyrides","Vídeo público de teste • Curta","https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",false,null);
  }
  void series(){section("Coleções e episódios","Experiência inicial de episódios. Séries completas dependem de acervo autorizado.");
- item("Coleção de curtas • Episódio 1","Big Buck Bunny","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false);
- item("Coleção de curtas • Episódio 2","Elephants Dream","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false);
+ item("Coleção de curtas • Episódio 1","Big Buck Bunny","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false,null);
+ item("Coleção de curtas • Episódio 2","Elephants Dream","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false,null);
  TextView note=text("Catálogo inicial de demonstração; não há séries comerciais completas nesta versão.",15);note.setTextColor(SOFT);add(body,note,80);
  }
  void settings(){section("Configurações","Sobre o aplicativo e créditos");
@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
  int start=Math.min(page*PAGE,filtered.size()),end=Math.min(start+PAGE,filtered.size());
  add(body,text(filtered.size()+" canais encontrados • página "+(page+1),15),46);
  if(page>0){TextView back=btn("◀ Voltar página");add(body,back,58);back.setOnClickListener(v->{page--;render();});}
- for(int i=start;i<end;i++){ChannelRepository.Channel c=filtered.get(i);item(c.title,c.group.isEmpty()?"Canal ao vivo":c.group,c.url,true);}
+ for(int i=start;i<end;i++){ChannelRepository.Channel c=filtered.get(i);item(c.title,c.group.isEmpty()?"Canal ao vivo":c.group,c.url,true,c.logo);}
  if(end<filtered.size()){TextView next=btn("Próxima página ▶");add(body,next,58);next.setOnClickListener(v->{page++;render();});}
  if(filtered.isEmpty())add(body,text("Nenhum canal encontrado nesta lista.",16),75);
  }
