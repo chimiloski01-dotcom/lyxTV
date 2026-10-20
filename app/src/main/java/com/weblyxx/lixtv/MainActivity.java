@@ -1,7 +1,7 @@
 package com.weblyxx.lixtv;
 import android.app.*;import android.os.*;import android.content.*;import android.graphics.Color;import android.graphics.Typeface;import android.graphics.drawable.GradientDrawable;import android.text.*;import android.view.*;import android.widget.*;import java.util.*;
 public class MainActivity extends Activity {
- final int NAVY=0xff07142b, PANEL=0xff122b4f, BLUE=0xff1672ef, SOFT=0xff9ac8ef, WHITE=Color.WHITE;
+ final int NAVY=0xff050D1C, PANEL=0xff142745, BLUE=0xff187EFF, SOFT=0xffA6BAD5, WHITE=Color.WHITE;
  LinearLayout body;TextView info;EditText search;String tab="Início";int page=0;List<ChannelRepository.Channel> channels=new ArrayList<>();boolean loading=false;final int PAGE=28;
  int dp(int v){return (int)(v*getResources().getDisplayMetrics().density+.5f);}
  GradientDrawable shape(int c){GradientDrawable d=new GradientDrawable();d.setColor(c);d.setCornerRadius(dp(13));return d;}
@@ -12,8 +12,8 @@ public class MainActivity extends Activity {
  void frame(){
   ScrollView sc=new ScrollView(this);sc.setBackgroundColor(NAVY);sc.setFillViewport(true);
   LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(26),dp(16),dp(26),dp(30));sc.addView(root);setContentView(sc);
-  TextView logo=text("LIX  TV",33);logo.setTextColor(0xff56beff);logo.setTypeface(Typeface.DEFAULT,Typeface.BOLD);root.addView(logo);
-  TextView slogan=text("WEBLYXX    •    SUA TV. SEU UNIVERSO.",12);slogan.setTextColor(SOFT);root.addView(slogan);
+  TextView logo=text("LIX  TV",33);logo.setTextColor(0xff56c6ff);logo.setTypeface(Typeface.DEFAULT,Typeface.BOLD);root.addView(logo);
+  TextView slogan=text("WEBLYXX    /    STREAMING PARA TV BOX",12);slogan.setTextColor(SOFT);root.addView(slogan);
   LinearLayout nav=new LinearLayout(this);nav.setPadding(0,dp(14),0,dp(10));root.addView(nav);
   for(String option:new String[]{"Início","TV ao vivo","Filmes","Séries","Favoritos","Configurações"}){TextView b=btn(option);b.setTextSize(14);b.setGravity(Gravity.CENTER);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(53),1);p.rightMargin=dp(7);nav.addView(b,p);b.setOnClickListener(v->{tab=option;page=0;render();});}
   search=new EditText(this);search.setTextColor(WHITE);search.setHintTextColor(SOFT);search.setSingleLine(true);search.setHint("Pesquisar canais");search.setPadding(dp(16),0,dp(16),0);search.setBackground(shape(PANEL));root.addView(search,new LinearLayout.LayoutParams(-1,dp(52)));
@@ -28,19 +28,19 @@ public class MainActivity extends Activity {
  void item(String label,String subtitle,String url,boolean isChannel){LinearLayout r=new LinearLayout(this);r.setGravity(Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,dp(78));rp.bottomMargin=dp(9);body.addView(r,rp);
  TextView b=btn("▶  "+label+"\n"+subtitle);b.setTextSize(16);r.addView(b,new LinearLayout.LayoutParams(0,-1,1));b.setOnClickListener(v->play(url));
  if(isChannel){TextView f=btn(fav(url)?"★":"☆");LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(dp(66),-1);fp.leftMargin=dp(8);r.addView(f,fp);f.setOnClickListener(v->{boolean n=!fav(url);getPreferences(0).edit().putBoolean("fav_"+url,n).apply();f.setText(n?"★":"☆");});}}
- void films(){section("Filmes gratuitos","Obras abertas e vídeos de teste com reprodução direta; não são lançamentos comerciais.");
+ void films(){section("Cinema aberto","Curtas e filmes de acesso público disponíveis para reprodução.");
  item("Big Buck Bunny","Curta de animação aberto • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false);
  item("Elephants Dream","Animação independente • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false);
  item("For Bigger Joyrides","Vídeo público de teste • Curta","https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",false);
  }
- void series(){section("Séries e episódios","Área preparada para séries com fontes de reprodução autorizadas.");
+ void series(){section("Coleções e episódios","Experiência inicial de episódios. Séries completas dependem de acervo autorizado.");
  item("Coleção de curtas • Episódio 1","Big Buck Bunny","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false);
  item("Coleção de curtas • Episódio 2","Elephants Dream","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false);
  TextView note=text("Catálogo inicial de demonstração; não há séries comerciais completas nesta versão.",15);note.setTextColor(SOFT);add(body,note,80);
  }
  void settings(){section("Configurações","Sobre o aplicativo e créditos");
  add(body,text("LIX TV v0.5 • Android TV Box",21),65);
- add(body,text("Criado por Weblyxx",22),62);
+ add(body,text("Desenvolvimento e criação: WEBLYXX",22),62);
  TextView desc=text("Projeto e desenvolvimento: Weblyxx. Interface original em azul para navegação com controle remoto.\n\nFontes: IPTV-org para canais públicos; mídias abertas de demonstração para filmes e episódios.\n\nO LIX TV não fornece assinaturas de serviços de terceiros.",16);desc.setTextColor(SOFT);add(body,desc,175);
  TextView reload=btn("↻ Atualizar lista brasileira");add(body,reload,62);reload.setOnClickListener(v->load("Brasil"));
  TextView world=btn("🌐 Carregar canais internacionais");add(body,world,62);world.setOnClickListener(v->load("Mundo"));
@@ -50,7 +50,7 @@ public class MainActivity extends Activity {
  if(tab.equals("Configurações")){settings();return;}
  if(tab.equals("Filmes")){films();return;}
  if(tab.equals("Séries")){series();return;}
- if(tab.equals("Início")){section("Bem-vindo ao LIX TV","Explore canais de TV ao vivo e o catálogo inicial de vídeos.");TextView next=btn("▶ Assistir TV ao vivo");add(body,next,70);next.setOnClickListener(v->{tab="TV ao vivo";render();});films();return;}
+ if(tab.equals("Início")){section("Seu entretenimento começa aqui","Canais ao vivo e conteúdos gratuitos, organizados para a sua televisão.");TextView next=btn("▶ Assistir TV ao vivo");add(body,next,70);next.setOnClickListener(v->{tab="TV ao vivo";render();});films();return;}
  section(tab.equals("Favoritos")?"Seus canais favoritos":"TV ao vivo","Canais públicos do IPTV-org • disponibilidade varia conforme a origem");
  String q=search.getText().toString().trim().toLowerCase(Locale.ROOT);List<ChannelRepository.Channel> filtered=new ArrayList<>();
  for(ChannelRepository.Channel c:channels){if(tab.equals("Favoritos")&&!fav(c.url))continue;if(!(c.title+" "+c.group).toLowerCase(Locale.ROOT).contains(q))continue;filtered.add(c);}
