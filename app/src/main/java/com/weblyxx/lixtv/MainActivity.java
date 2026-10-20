@@ -1,57 +1,64 @@
 package com.weblyxx.lixtv;
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.graphics.*;
-import android.graphics.drawable.GradientDrawable;
-import android.view.*;
-import android.widget.*;
-import android.text.*;
-import java.util.*;
-
+import android.app.*;import android.os.*;import android.content.*;import android.graphics.Color;import android.graphics.Typeface;import android.graphics.drawable.GradientDrawable;import android.text.*;import android.view.*;import android.widget.*;import java.util.*;
 public class MainActivity extends Activity {
- private final int BG=Color.rgb(7,19,39),SURFACE=Color.rgb(17,42,74),BLUE=Color.rgb(19,112,248),WHITE=Color.WHITE;
- private LinearLayout content; private TextView status; private EditText search;
- private List<ChannelRepository.Channel> channels=new ArrayList<>();
- private String current="Brasil";private int page=0;private static final int PAGE=55;private boolean loading=false;
- private int dp(int n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
- private GradientDrawable bg(int color){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(12));return d;}
- private TextView label(String text,int size){TextView t=new TextView(this);t.setText(text);t.setTextColor(WHITE);t.setTextSize(size);t.setGravity(Gravity.CENTER_VERTICAL);return t;}
- private TextView button(String name){TextView b=label(name,16);b.setGravity(Gravity.CENTER);b.setTypeface(null,1);b.setFocusable(true);b.setClickable(true);b.setBackground(bg(SURFACE));b.setPadding(dp(12),dp(9),dp(12),dp(9));
- b.setOnFocusChangeListener((v,f)->{b.setBackground(bg(f?BLUE:SURFACE));b.setScaleX(f?1.02f:1f);b.setScaleY(f?1.02f:1f);});return b;}
- @Override public void onCreate(Bundle state){super.onCreate(state);build();load("Brasil");}
- private void build(){
-  ScrollView sc=new ScrollView(this);sc.setFillViewport(true);sc.setBackgroundColor(BG);
-  LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(24),dp(18),dp(24),dp(24));sc.addView(root);setContentView(sc);
-  TextView logo=label("◉  LIX TV",31);logo.setTextColor(Color.rgb(83,192,255));logo.setTypeface(null,1);root.addView(logo);
-  TextView sub=label("WEBLYXX  •  ANDROID TV BOX  •  CANAIS PÚBLICOS",12);sub.setTextColor(Color.rgb(149,185,215));root.addView(sub);
-  LinearLayout nav=new LinearLayout(this);nav.setPadding(0,dp(14),0,dp(12));root.addView(nav);
-  for(String tab:new String[]{"Brasil","Mundo","Favoritos","Atualizar"}){
-   TextView b=button(tab);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(0,dp(55),1);lp.setMargins(0,0,dp(9),0);nav.addView(b,lp);
-   b.setOnClickListener(v->{if(tab.equals("Atualizar")){load(current.equals("Mundo")?"Mundo":"Brasil");return;}current=tab;page=0;if(tab.equals("Mundo")||tab.equals("Brasil"))load(tab);else render();});
-  }
-  search=new EditText(this);search.setSingleLine(true);search.setTextColor(WHITE);search.setHintTextColor(Color.rgb(157,188,218));search.setHint("Buscar canais pelo nome");search.setTextSize(18);search.setPadding(dp(16),0,dp(16),0);search.setBackground(bg(SURFACE));root.addView(search,new LinearLayout.LayoutParams(-1,dp(55)));
+ final int NAVY=0xff07142b, PANEL=0xff122b4f, BLUE=0xff1672ef, SOFT=0xff9ac8ef, WHITE=Color.WHITE;
+ LinearLayout body;TextView info;EditText search;String tab="Início";int page=0;List<ChannelRepository.Channel> channels=new ArrayList<>();boolean loading=false;final int PAGE=28;
+ int dp(int v){return (int)(v*getResources().getDisplayMetrics().density+.5f);}
+ GradientDrawable shape(int c){GradientDrawable d=new GradientDrawable();d.setColor(c);d.setCornerRadius(dp(13));return d;}
+ TextView text(String s,int size){TextView t=new TextView(this);t.setText(s);t.setTextSize(size);t.setTextColor(WHITE);t.setGravity(Gravity.CENTER_VERTICAL);return t;}
+ TextView btn(String title){TextView t=text(title,17);t.setFocusable(true);t.setClickable(true);t.setPadding(dp(16),dp(11),dp(16),dp(11));t.setGravity(Gravity.CENTER_VERTICAL);t.setBackground(shape(PANEL));t.setOnFocusChangeListener((v,f)->{t.setBackground(shape(f?BLUE:PANEL));t.setScaleX(f?1.025f:1f);t.setScaleY(f?1.025f:1f);});return t;}
+ void add(LinearLayout l,TextView v,int height){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,dp(height));p.bottomMargin=dp(8);l.addView(v,p);}
+ @Override public void onCreate(Bundle s){super.onCreate(s);frame();load("Brasil");}
+ void frame(){
+  ScrollView sc=new ScrollView(this);sc.setBackgroundColor(NAVY);sc.setFillViewport(true);
+  LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(26),dp(16),dp(26),dp(30));sc.addView(root);setContentView(sc);
+  TextView logo=text("LIX  TV",33);logo.setTextColor(0xff56beff);logo.setTypeface(Typeface.DEFAULT,Typeface.BOLD);root.addView(logo);
+  TextView slogan=text("WEBLYXX    •    SUA TV. SEU UNIVERSO.",12);slogan.setTextColor(SOFT);root.addView(slogan);
+  LinearLayout nav=new LinearLayout(this);nav.setPadding(0,dp(14),0,dp(10));root.addView(nav);
+  for(String option:new String[]{"Início","TV ao vivo","Filmes","Séries","Favoritos","Configurações"}){TextView b=btn(option);b.setTextSize(14);b.setGravity(Gravity.CENTER);LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(0,dp(53),1);p.rightMargin=dp(7);nav.addView(b,p);b.setOnClickListener(v->{tab=option;page=0;render();});}
+  search=new EditText(this);search.setTextColor(WHITE);search.setHintTextColor(SOFT);search.setSingleLine(true);search.setHint("Pesquisar canais");search.setPadding(dp(16),0,dp(16),0);search.setBackground(shape(PANEL));root.addView(search,new LinearLayout.LayoutParams(-1,dp(52)));
   search.addTextChangedListener(new TextWatcher(){public void beforeTextChanged(CharSequence s,int st,int c,int a){}public void onTextChanged(CharSequence s,int st,int before,int count){page=0;render();}public void afterTextChanged(Editable e){}});
-  status=label("Carregando...",14);status.setPadding(0,dp(14),0,dp(9));root.addView(status);
-  content=new LinearLayout(this);content.setOrientation(1);root.addView(content);
+  info=text("Carregando canais...",14);info.setTextColor(SOFT);info.setPadding(0,dp(12),0,dp(12));root.addView(info);
+  body=new LinearLayout(this);body.setOrientation(1);root.addView(body);
  }
- private void load(String tab){loading=true;current=tab;render();ChannelRepository.load(tab.equals("Mundo")?ChannelRepository.GLOBAL:ChannelRepository.BR,(result,error)->{loading=false;if(error!=null){status.setText("Falha ao carregar: "+error);content.removeAllViews();return;}channels=result;page=0;render();});}
- private boolean favorite(String url){return getPreferences(0).getBoolean("fav_"+url,false);}
- private void render(){if(content==null)return;content.removeAllViews();if(loading){status.setText("Carregando canais do IPTV-org...");return;}
-  String q=search.getText().toString().toLowerCase(Locale.ROOT).trim();
-  List<ChannelRepository.Channel> filtered=new ArrayList<>();
-  for(ChannelRepository.Channel ch:channels){if(current.equals("Favoritos")&&!favorite(ch.url))continue;if(!ch.title.toLowerCase(Locale.ROOT).contains(q)&&!ch.group.toLowerCase(Locale.ROOT).contains(q))continue;filtered.add(ch);}
-  int start=Math.min(page*PAGE,filtered.size()),end=Math.min(start+PAGE,filtered.size());
-  status.setText(current+"  •  "+filtered.size()+" canais encontrados  •  página "+(page+1));
-  if(page>0){TextView prev=button("◀ Página anterior");content.addView(prev,new LinearLayout.LayoutParams(-1,dp(52)));prev.setOnClickListener(v->{page--;render();});}
-  for(int i=start;i<end;i++){ChannelRepository.Channel ch=filtered.get(i);
-   LinearLayout row=new LinearLayout(this);row.setGravity(Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,dp(73));lp.setMargins(0,dp(6),0,0);content.addView(row,lp);
-   TextView play=button("▶  "+ch.title+(ch.group.isEmpty()?"":"  ·  "+ch.group));play.setGravity(Gravity.CENTER_VERTICAL);row.addView(play,new LinearLayout.LayoutParams(0,-1,1));
-   play.setOnClickListener(v->{Intent intent=new Intent(this,PlayerActivity.class);intent.putExtra("url",ch.url);startActivity(intent);});
-   TextView fav=button(favorite(ch.url)?"★":"☆");LinearLayout.LayoutParams fl=new LinearLayout.LayoutParams(dp(65),-1);fl.leftMargin=dp(8);row.addView(fav,fl);
-   fav.setOnClickListener(v->{boolean next=!favorite(ch.url);getPreferences(0).edit().putBoolean("fav_"+ch.url,next).apply();fav.setText(next?"★":"☆");if(current.equals("Favoritos"))render();});
-  }
-  if(end<filtered.size()){TextView next=button("Próxima página ▶");LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,dp(56));lp.topMargin=dp(12);content.addView(next,lp);next.setOnClickListener(v->{page++;render();});}
-  if(filtered.isEmpty()){TextView none=label("Nenhum canal nesta seleção. Experimente uma busca diferente.",18);content.addView(none);}
+ void load(String mode){loading=true;render();ChannelRepository.load(mode.equals("Mundo")?ChannelRepository.GLOBAL:ChannelRepository.BR,(list,error)->{loading=false;if(error!=null){info.setText("Não foi possível atualizar canais: "+error);return;}channels=list;render();});}
+ boolean fav(String url){return getPreferences(0).getBoolean("fav_"+url,false);}
+ void play(String url){Intent i=new Intent(this,PlayerActivity.class);i.putExtra("url",url);startActivity(i);}
+ void section(String heading,String caption){TextView t=text(heading,26);t.setTypeface(null,1);add(body,t,45);TextView c=text(caption,15);c.setTextColor(SOFT);add(body,c,42);}
+ void item(String label,String subtitle,String url,boolean isChannel){LinearLayout r=new LinearLayout(this);r.setGravity(Gravity.CENTER_VERTICAL);LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,dp(78));rp.bottomMargin=dp(9);body.addView(r,rp);
+ TextView b=btn("▶  "+label+"\n"+subtitle);b.setTextSize(16);r.addView(b,new LinearLayout.LayoutParams(0,-1,1));b.setOnClickListener(v->play(url));
+ if(isChannel){TextView f=btn(fav(url)?"★":"☆");LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(dp(66),-1);fp.leftMargin=dp(8);r.addView(f,fp);f.setOnClickListener(v->{boolean n=!fav(url);getPreferences(0).edit().putBoolean("fav_"+url,n).apply();f.setText(n?"★":"☆");});}}
+ void films(){section("Filmes gratuitos","Obras abertas e vídeos de teste com reprodução direta; não são lançamentos comerciais.");
+ item("Big Buck Bunny","Curta de animação aberto • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false);
+ item("Elephants Dream","Animação independente • Filme","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false);
+ item("For Bigger Joyrides","Vídeo público de teste • Curta","https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",false);
+ }
+ void series(){section("Séries e episódios","Área preparada para séries com fontes de reprodução autorizadas.");
+ item("Coleção de curtas • Episódio 1","Big Buck Bunny","https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",false);
+ item("Coleção de curtas • Episódio 2","Elephants Dream","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false);
+ TextView note=text("Catálogo inicial de demonstração; não há séries comerciais completas nesta versão.",15);note.setTextColor(SOFT);add(body,note,80);
+ }
+ void settings(){section("Configurações","Sobre o aplicativo e créditos");
+ add(body,text("LIX TV v0.5 • Android TV Box",21),65);
+ add(body,text("Criado por Weblyxx",22),62);
+ TextView desc=text("Projeto e desenvolvimento: Weblyxx. Interface original em azul para navegação com controle remoto.\n\nFontes: IPTV-org para canais públicos; mídias abertas de demonstração para filmes e episódios.\n\nO LIX TV não fornece assinaturas de serviços de terceiros.",16);desc.setTextColor(SOFT);add(body,desc,175);
+ TextView reload=btn("↻ Atualizar lista brasileira");add(body,reload,62);reload.setOnClickListener(v->load("Brasil"));
+ TextView world=btn("🌐 Carregar canais internacionais");add(body,world,62);world.setOnClickListener(v->load("Mundo"));
+ }
+ void render(){if(body==null)return;body.removeAllViews();if(loading){info.setText("Sincronizando lista de canais públicos...");return;}
+ info.setText(tab+"    •    LIX TV 0.5");
+ if(tab.equals("Configurações")){settings();return;}
+ if(tab.equals("Filmes")){films();return;}
+ if(tab.equals("Séries")){series();return;}
+ if(tab.equals("Início")){section("Bem-vindo ao LIX TV","Explore canais de TV ao vivo e o catálogo inicial de vídeos.");TextView next=btn("▶ Assistir TV ao vivo");add(body,next,70);next.setOnClickListener(v->{tab="TV ao vivo";render();});films();return;}
+ section(tab.equals("Favoritos")?"Seus canais favoritos":"TV ao vivo","Canais públicos do IPTV-org • disponibilidade varia conforme a origem");
+ String q=search.getText().toString().trim().toLowerCase(Locale.ROOT);List<ChannelRepository.Channel> filtered=new ArrayList<>();
+ for(ChannelRepository.Channel c:channels){if(tab.equals("Favoritos")&&!fav(c.url))continue;if(!(c.title+" "+c.group).toLowerCase(Locale.ROOT).contains(q))continue;filtered.add(c);}
+ int start=Math.min(page*PAGE,filtered.size()),end=Math.min(start+PAGE,filtered.size());
+ add(body,text(filtered.size()+" canais encontrados • página "+(page+1),15),46);
+ if(page>0){TextView back=btn("◀ Voltar página");add(body,back,58);back.setOnClickListener(v->{page--;render();});}
+ for(int i=start;i<end;i++){ChannelRepository.Channel c=filtered.get(i);item(c.title,c.group.isEmpty()?"Canal ao vivo":c.group,c.url,true);}
+ if(end<filtered.size()){TextView next=btn("Próxima página ▶");add(body,next,58);next.setOnClickListener(v->{page++;render();});}
+ if(filtered.isEmpty())add(body,text("Nenhum canal encontrado nesta lista.",16),75);
  }
 }
