@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
  item("Coleção de curtas • Episódio 2","Elephants Dream","https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",false,null);
  TextView note=text("Catálogo inicial de demonstração; não há séries comerciais completas nesta versão.",15);note.setTextColor(SOFT);add(body,note,80);
  }
- void settings(){section("Configurações","Sobre o aplicativo e créditos");
+ void settings(){section("Configurações","Sobre o aplicativo e créditos");\n TextView config=btn("Configurar token TMDB (armazenado somente no aparelho)");add(body,config,62);config.setOnClickListener(v->{EditText input=new EditText(this);input.setSingleLine(true);input.setHint("Token de leitura TMDB");new AlertDialog.Builder(this).setTitle("TMDB • Token de leitura").setMessage("Não publique seu token no GitHub. Ele ficará salvo neste aparelho.").setView(input).setPositiveButton("Salvar",(dialog,which)->getSharedPreferences("settings",0).edit().putString("tmdb_token",input.getText().toString().trim()).apply()).setNegativeButton("Cancelar",null).show();});
  add(body,text("LIX TV v0.6 • Android TV Box",21),65);
  add(body,text("Desenvolvimento e criação: WEBLYXX",22),62);
  TextView desc=text("Projeto e desenvolvimento: Weblyxx. Interface original em azul para navegação com controle remoto.\n\nFontes: IPTV-org para canais públicos; mídias abertas de demonstração para filmes e episódios.\n\nO LIX TV não fornece assinaturas de serviços de terceiros.",16);desc.setTextColor(SOFT);add(body,desc,175);
@@ -50,8 +50,8 @@ public class MainActivity extends Activity {
  void render(){if(body==null)return;body.removeAllViews();if(loading){info.setText("Sincronizando lista de canais públicos...");return;}
  info.setText(tab+"    •    LIX TV 0.6");
  if(tab.equals("Configurações")){settings();return;}
- if(tab.equals("Filmes")){films();return;}
- if(tab.equals("Séries")){series();return;}
+ if(tab.equals("Filmes")){startActivity(new Intent(this,CatalogActivity.class).putExtra("series",false));tab="Início";return;}
+ if(tab.equals("Séries")){startActivity(new Intent(this,CatalogActivity.class).putExtra("series",true));tab="Início";return;}
  if(tab.equals("Início")){section("Seu entretenimento começa aqui","Canais ao vivo e conteúdos gratuitos, organizados para a sua televisão.");TextView next=btn("▶ Assistir TV ao vivo");add(body,next,70);next.setOnClickListener(v->{tab="TV ao vivo";render();});films();return;}
  section(tab.equals("Favoritos")?"Seus canais favoritos":"Canais ao vivo","Escolha uma categoria, pesquise pelo nome e pressione OK para assistir.");
   LinearLayout filters=new LinearLayout(this);filters.setOrientation(LinearLayout.HORIZONTAL);body.addView(filters);for(String opt:new String[]{"Todos","Notícias","Esportes","Entretenimento","Infantil","Música","Outros"}){TextView b=btn(opt);b.setTextSize(13);LinearLayout.LayoutParams fp=new LinearLayout.LayoutParams(0,dp(48),1);fp.rightMargin=dp(5);filters.addView(b,fp);b.setOnClickListener(v->{category=opt;page=0;render();});}
