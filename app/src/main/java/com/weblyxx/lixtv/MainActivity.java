@@ -76,6 +76,8 @@ public class MainActivity extends Activity {
  if(page>0){TextView back=button("◀  Página anterior");margin(root,back,50,8);back.setOnClickListener(v->{page--;fillGrid(root,favorites,query);});}
  if(end<filtered.size()){TextView next=button("Próxima página  ▶");margin(root,next,50,8);next.setOnClickListener(v->{page++;fillGrid(root,favorites,query);});}
  }
+ void openKodi(){android.content.pm.PackageManager pm=getPackageManager();Intent intent=pm.getLaunchIntentForPackage("org.xbmc.kodi");if(intent==null){new AlertDialog.Builder(this).setTitle("Kodi não instalado").setMessage("Instale o Kodi oficial compatível com seu aparelho. Depois, no Kodi, instale o complemento LIX TV pelo arquivo ZIP da Kodi Edition.").setPositiveButton("Entendi",null).show();return;}startActivity(intent);}
+ void kodiSection(){title("Kodi • Biblioteca de mídia","Acesso ao motor Kodi e ao complemento LIX TV");TextView launch=button("▶  Abrir Kodi instalado");margin(content,launch,62,12);launch.setOnClickListener(v->openKodi());TextView guide=text("No Kodi, instale o complemento LIX TV em Complementos > Instalar de um arquivo ZIP. Ele inclui vídeos abertos e suporta playlists M3U autorizadas. Não há filmes comerciais fornecidos automaticamente pelo Vikings ou Brazuca Play.",16);guide.setTextColor(PALE);margin(content,guide,166,10);}
  void settings(){title("Configurações","LIX TV • WEBLYXX");margin(content,text("Versão 0.7 • Android TV\nFonte de canais: IPTV-org\nConteúdos de vídeo: amostras abertas\nNenhuma integração Vikings/Brazuca Play está instalada nesta versão.",16),140,14);
  TextView br=button("↻ Atualizar canais do Brasil");margin(content,br,58,9);br.setOnClickListener(v->load("Brasil"));
  TextView global=button("🌐 Carregar canais do mundo");margin(content,global,58,9);global.setOnClickListener(v->load("Mundo"));}
@@ -83,8 +85,8 @@ public class MainActivity extends Activity {
  if(tab.equals("Início")){hero();if(loading)margin(content,text("Carregando canais...",16),44,8);else channelRail("TV ao vivo • Destaques",channels);mediaRail("Cinema aberto",false);mediaRail("Coleções de episódios",true);}
  else if(tab.equals("TV ao vivo"))channelsScreen(false);
  else if(tab.equals("Favoritos"))channelsScreen(true);
- else if(tab.equals("Filmes")){title("Filmes","Seleção aberta para teste de reprodução");mediaRail("Cinema aberto",false);}
- else if(tab.equals("Séries")){title("Séries","Coleções demonstrativas • Sem séries comerciais completas");mediaRail("Episódios demonstrativos",true);}
+ else if(tab.equals("Filmes")){title("Filmes","Cinema aberto e biblioteca pelo Kodi");mediaRail("Cinema aberto",false);kodiSection();}
+ else if(tab.equals("Séries")){title("Séries","Episódios demonstrativos e biblioteca pelo Kodi");mediaRail("Episódios demonstrativos",true);kodiSection();}
  else settings();
  }
 }
