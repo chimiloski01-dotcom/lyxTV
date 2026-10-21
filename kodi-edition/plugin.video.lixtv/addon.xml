@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon id="plugin.video.lixtv" name="LIX TV | Weblyxx" version="0.1.0" provider-name="Weblyxx">
+  <requires><import addon="xbmc.python" version="3.0.0"/></requires>
+  <extension point="xbmc.python.pluginsource" library="default.py"><provides>video</provides></extension>
+  <extension point="xbmc.addon.metadata">
+    <summary lang="en_GB">LIX TV media hub</summary>
+    <description lang="en_GB">Independent Kodi plugin with authorized sample media and IPTV source selection. No third-party commercial feeds bundled.</description>
+    <platform>all</platform>
+  </extension>
+</addon>
