@@ -1,0 +1,40 @@
+name: Build Kodi Android ARM64 (experimental)
+on:
+  workflow_dispatch:
+jobs:
+  kodi-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: lixtv
+      - uses: actions/checkout@v4
+        with:
+          repository: xbmc/xbmc
+          ref: Omega
+          path: kodi
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install host build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf automake bison build-essential curl flex gawk git gperf libcurl4-openssl-dev libtool pkg-config python3 unzip zip zlib1g-dev cmake ninja-build gettext
+      - name: Install Android toolchain
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "ndk;28.2.13676358"
+      - name: Build native Kodi ARM64
+        env:
+          KODI_SRC: ${{ github.workspace }}/kodi
+          WORK_ROOT: ${{ github.workspace }}/out
+          BUILD_JOBS: '2'
+        run: bash lixtv/kodi-edition/native/build-arm64.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kodi-ARM64-upstream-test
+          path: out/artifacts/*.apk
+          if-no-files-found: error
