@@ -28,8 +28,34 @@ def menu():
     xbmcplugin.setPluginCategory(HANDLE, "LIX TV • WEBLYXX")
     entry("▶ Filmes abertos / demonstrações", "samples")
     entry("📺 TV ao vivo • minha playlist M3U", "playlist")
+    entry("Complementos Kodi instalados", "addons")
     entry("⚙ Configurar playlist autorizada", "configure")
     xbmcplugin.endOfDirectory(HANDLE)
+
+def addons():
+    candidates = [
+        ("Brazuca Play", "plugin.video.BrazucaPlay.Matrix"),
+        ("Vikings FREE", "plugin.video.VikingsFREE"),
+        ("Vikings Pro", "plugin.video.VikingsPro"),
+    ]
+    for label, addon_id in candidates:
+        try:
+            addon = xbmcaddon.Addon(id=addon_id)
+            entry(label + " - " + addon.getAddonInfo("version"), "addon", addon_id=addon_id)
+        except Exception:
+            pass
+    xbmcplugin.endOfDirectory(HANDLE)
+
+def open_addon(addon_id):
+    allowed = {"plugin.video.BrazucaPlay.Matrix", "plugin.video.VikingsFREE", "plugin.video.VikingsPro"}
+    if addon_id not in allowed:
+        return
+    try:
+        xbmcaddon.Addon(id=addon_id)
+    except Exception:
+        xbmcgui.Dialog().ok("LIX TV", "Complemento não instalado ou incompatível.")
+        return
+    xbmc.executebuiltin("Container.Update(plugin://" + addon_id + "/)")
 
 def samples():
     for title, url in SAMPLES:
@@ -83,7 +109,11 @@ def configure():
 if __name__ == "__main__":
     args = dict(urllib.parse.parse_qsl(sys.argv[2][1:]))
     action = args.get("action", "")
-    if action == "samples":
+    if action == "addons":
+        addons()
+    elif action == "addon":
+        open_addon(args.get("addon_id", ""))
+    elif action == "samples":
         samples()
     elif action == "playlist":
         playlist()
