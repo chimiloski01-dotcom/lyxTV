@@ -1,6 +1,8 @@
 name: Build Kodi Android ARM64
 on:
   workflow_dispatch:
+  push:
+    branches: [feature/kodi-arm64-lixtv]
 jobs:
   kodi-native:
     runs-on: ubuntu-24.04
