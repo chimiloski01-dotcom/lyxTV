@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 : "${ANDROID_HOME:?Define ANDROID_HOME para o Android SDK}"
-: "${ANDROID_NDK_HOME:?Defina ANDROID_NDK_HOME para o NDK Android r21e}"
 : "${KODI_SRC:?Define KODI_SRC para o checkout xbmc/xbmc}"
 KODI_SRC="$(realpath "$KODI_SRC")"
+ANDROID_NDK_HOME="${ANDROID_NDK_HOME:-$ANDROID_HOME/ndk/21.4.7075529}"
 ANDROID_NDK_HOME="$(realpath "$ANDROID_NDK_HOME")"
 WORK_ROOT="${WORK_ROOT:-$PWD/.native-build}"
 BUILD_JOBS="${BUILD_JOBS:-2}"
